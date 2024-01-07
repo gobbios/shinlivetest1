@@ -15,6 +15,8 @@ ui <- fluidPage(
     sidebarPanel(
 
       # Input: Slider for the number of bins ----
+      numericInput("seed", "seed", sample(50, 1)),
+      actionButton("savefile", "go"),
       sliderInput(inputId = "bins",
                   label = "Number of bins:",
                   min = 1,
@@ -37,8 +39,17 @@ ui <- fluidPage(
 
 # Define server logic required to draw a histogram ----
 server <- function(input, output) {
+  observeEvent(input$savefile, {
+    path <- normalizePath("~/Desktop")
+    set.seed(input$seed)
+
+    writeLines(as.character(myrnorm()), con = file.path(path, "temp.txt"))
+  })
   rhandsontable(iris)
-  output$testfoo <- renderPrint(myrnorm())
+  output$testfoo <- renderText({
+    set.seed(input$seed)
+    myrnorm()
+    })
 
   output$testtab <- renderRHandsontable({
     DF = head(iris)
