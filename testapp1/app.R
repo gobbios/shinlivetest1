@@ -1,6 +1,7 @@
 library(shiny)
 
 library(rhandsontable)
+# library(shinyFiles)
 
 # Define UI for app that draws a histogram ----
 ui <- fluidPage(
@@ -17,6 +18,7 @@ ui <- fluidPage(
       # Input: Slider for the number of bins ----
       numericInput("seed", "seed", sample(50, 1)),
       actionButton("savefile", "go"),
+
       sliderInput(inputId = "bins",
                   label = "Number of bins:",
                   min = 1,
@@ -30,6 +32,7 @@ ui <- fluidPage(
 
       # Output: Histogram ----
       verbatimTextOutput("testfoo"),
+      verbatimTextOutput("testfoo2"),
       rHandsontableOutput("testtab"),
       plotOutput(outputId = "distPlot")
 
@@ -38,13 +41,17 @@ ui <- fluidPage(
 )
 
 # Define server logic required to draw a histogram ----
-server <- function(input, output) {
+server <- function(input, output, session) {
   observeEvent(input$savefile, {
     path <- normalizePath("~/Desktop")
     set.seed(input$seed)
 
     writeLines(as.character(myrnorm()), con = file.path(path, "temp.txt"))
+    print(path)
+    # shinyFileChoose("helloe", "select")
   })
+  # output$testfoo2 <- renderText({print(getwd())})
+  output$testfoo2 <- renderText({print(list.files("~/"))})
   rhandsontable(iris)
   output$testfoo <- renderText({
     set.seed(input$seed)
